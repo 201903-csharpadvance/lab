@@ -7,6 +7,7 @@ using System.Linq;
 namespace CSharpAdvanceDesignTests
 {
     [TestFixture]
+    [Ignore("not yet")]
     public class JoeySkipTests
     {
         [Test]
