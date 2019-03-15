@@ -1,8 +1,8 @@
 ﻿using ExpectedObjects;
+using Lab;
 using Lab.Entities;
 using NUnit.Framework;
 using NUnit.Framework.Internal;
-using System;
 using System.Collections.Generic;
 
 namespace CSharpAdvanceDesignTests
@@ -30,8 +30,7 @@ namespace CSharpAdvanceDesignTests
                 new Product {Id = 8, Cost = 18, Price = 780, Supplier = "Yahoo"}
             };
 
-            var actual = JoeyWhere(products,
-                product => product.Price > 200 && product.Price < 500);
+            var actual = products.JoeyWhere(product => product.Price > 200 && product.Price < 500);
 
             var expected = new List<Product>
             {
@@ -59,8 +58,8 @@ namespace CSharpAdvanceDesignTests
             };
 
             //var actual = JoeyWhereFilterCost(products);
-            var actual = JoeyWhere(products,
-                p => p.Price > 200 && p.Price < 500 && p.Cost > 30);
+            //var actual = products.JoeyWhere(p => p.Price > 200 && p.Price < 500 && p.Cost > 30);
+            var actual = products.JoeyWhere(p => p.Price > 200 && p.Price < 500 && p.Cost > 30);
 
             var expected = new List<Product>
             {
@@ -76,7 +75,7 @@ namespace CSharpAdvanceDesignTests
         public void find_short_names()
         {
             var names = new List<string> { "Joey", "Cash", "William", "Sam", "Brian", "Jessica" };
-            var actual = JoeyWhere(names, n => n.Length < 5);
+            var actual = names.JoeyWhere(n => n.Length < 5);
             var expected = new[]
             {
                 "Joey", "Cash", "Sam"
@@ -97,19 +96,5 @@ namespace CSharpAdvanceDesignTests
 
         //    return result;
         //}
-
-        private List<TSource> JoeyWhere<TSource>(List<TSource> source, Func<TSource, bool> predicate)
-        {
-            var result = new List<TSource>();
-            foreach (var product in source)
-            {
-                if (predicate(product))
-                {
-                    result.Add(product);
-                }
-            }
-
-            return result;
-        }
     }
 }
