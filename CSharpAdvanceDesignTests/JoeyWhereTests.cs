@@ -30,7 +30,7 @@ namespace CSharpAdvanceDesignTests
                 new Product {Id = 8, Cost = 18, Price = 780, Supplier = "Yahoo"}
             };
 
-            var actual = products.JoeyWhere(product => product.Price > 200 && product.Price < 500);
+            var actual = MyOwnLinq.JoeyWhere(products, product => product.Price > 200 && product.Price < 500);
 
             var expected = new List<Product>
             {
@@ -59,7 +59,7 @@ namespace CSharpAdvanceDesignTests
 
             //var actual = JoeyWhereFilterCost(products);
             //var actual = products.JoeyWhere(p => p.Price > 200 && p.Price < 500 && p.Cost > 30);
-            var actual = products.JoeyWhere(p => p.Price > 200 && p.Price < 500 && p.Cost > 30);
+            var actual = MyOwnLinq.JoeyWhere(products, p => p.Price > 200 && p.Price < 500 && p.Cost > 30);
 
             var expected = new List<Product>
             {
@@ -74,14 +74,28 @@ namespace CSharpAdvanceDesignTests
         [Test]
         public void find_short_names()
         {
-            var names = new List<string> { "Joey", "Cash", "William", "Sam", "Brian", "Jessica" };
-            var actual = names.JoeyWhere(n => n.Length < 5);
+            var names = new List<string> {"Joey", "Cash", "William", "Sam", "Brian", "Jessica"};
+            var actual = MyOwnLinq.JoeyWhere(names, n => n.Length < 5);
             var expected = new[]
             {
                 "Joey", "Cash", "Sam"
             };
             expected.ToExpectedObject().ShouldMatch(actual);
         }
+
+
+        [Test]
+        public void find_odd_names()
+        {
+            var names = new List<string> {"Joey", "Cash", "William", "Sam", "Brian", "Jessica"};
+            var actual = names.JoeyWhere((name, index) => index % 2 == 0);
+            var expected = new[]
+            {
+                "Joey", "William", "Brian"
+            };
+            expected.ToExpectedObject().ShouldMatch(actual);
+        }
+
 
         //private List<string> JoeyWhereDuplicate(List<string> names, Func<string, bool> predicate)
         //{
