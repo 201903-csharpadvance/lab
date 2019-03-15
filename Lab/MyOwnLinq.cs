@@ -5,35 +5,84 @@ namespace Lab
 {
     public static class MyOwnLinq
     {
-        public static List<TSource> JoeyWhere<TSource>(List<TSource> source, Predicate<TSource> predicate)
+        public static IEnumerable<TSource> JoeyWhere<TSource>(this IEnumerable<TSource> source,
+            Predicate<TSource> predicate)
         {
-            var result = new List<TSource>();
-            foreach (var product in source)
+            var sourcEnumerator = source.GetEnumerator();
+            while (sourcEnumerator.MoveNext())
             {
-                if (predicate(product))
+                var item = sourcEnumerator.Current;
+                if (predicate(item))
                 {
-                    result.Add(product);
+                    yield return item;
                 }
             }
 
-            return result;
+            //foreach (var product in source)
+            //{
+            //    if (predicate(product))
+            //    {
+            //        //yield return product;
+            //    }
+            //}
         }
 
-        public static List<TSource> JoeyWhere<TSource>(this List<TSource> source, Func<TSource, int, bool> predicate)
+        public static IEnumerable<TSource> JoeyWhere<TSource>(this IEnumerable<TSource> source,
+            Func<TSource, int, bool> predicate)
         {
-            var result = new List<TSource>();
+            var sourceEnumerator = source.GetEnumerator();
             var index = 0;
-            foreach (var product in source)
+            while (sourceEnumerator.MoveNext())
             {
-                if (predicate(product, index))
+                var item = sourceEnumerator.Current;
+                if (predicate(item, index))
                 {
-                    result.Add(product);
+                    yield return item;
                 }
 
                 index++;
             }
 
+            //var result = new List<TSource>();
+            //var index = 0;
+            //foreach (var product in source)
+            //{
+            //    if (predicate(product, index))
+            //    {
+            //        result.Add(product);
+            //    }
+
+            //    index++;
+            //}
+
+            //return result;
+        }
+
+        public static IEnumerable<TResult> JoeySelect<TSource, TResult>(this IEnumerable<TSource> source,
+            Func<TSource, int, TResult> selector)
+        {
+            var result = new List<TResult>();
+            var index = 0;
+            foreach (var url in source)
+            {
+                result.Add(selector(url, index));
+                index++;
+            }
+
             return result;
+        }
+
+        public static IEnumerable<TResult> JoeySelect<TSource, TResult>(this IEnumerable<TSource> source,
+            Func<TSource, TResult> selector)
+        {
+            //var result = new List<TResult>();
+            foreach (var url in source)
+            {
+                yield return selector(url);
+                //result.Add(selector(url));
+            }
+
+            //return result;
         }
     }
 }
