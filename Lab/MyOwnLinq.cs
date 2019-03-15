@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Lab.Entities;
+using System;
 using System.Collections.Generic;
 
 namespace Lab
@@ -83,6 +84,26 @@ namespace Lab
             }
 
             //return result;
+        }
+
+        public static IEnumerable<Employee> JoeyTake(this IEnumerable<Employee> employees, int takeCount)
+        {
+            var employeEnumerator = employees.GetEnumerator();
+            var index = 0;
+            while (employeEnumerator.MoveNext())
+            {
+                var employee = employeEnumerator.Current;
+
+                if (index < takeCount)
+                {
+                    yield return employee;
+                }
+                else
+                {
+                    yield break;
+                }
+                index++;
+            }
         }
     }
 }

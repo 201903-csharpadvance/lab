@@ -7,15 +7,21 @@ using System.Linq;
 namespace CSharpAdvanceDesignTests
 {
     [TestFixture]
-    [Ignore("not yet")]
     public class JoeySkipTests
     {
         [Test]
         public void skip_2_employees()
         {
-            var employees = GetEmployees();
+            var employees = (IEnumerable<Employee>)new List<Employee>
+            {
+                new Employee {FirstName = "Joey", LastName = "Chen"},
+                new Employee {FirstName = "Tom", LastName = "Li"},
+                new Employee {FirstName = "David", LastName = "Chen"},
+                new Employee {FirstName = "Mike", LastName = "Chang"},
+                new Employee {FirstName = "Joseph", LastName = "Yao"},
+            };
 
-            var actual = JoeySelect(employees);
+            var actual = JoeySkip(employees, 2);
 
             var expected = new List<Employee>
             {
@@ -27,21 +33,30 @@ namespace CSharpAdvanceDesignTests
             expected.ToExpectedObject().ShouldEqual(actual.ToList());
         }
 
-        private IEnumerable<Employee> JoeySelect(IEnumerable<Employee> employees)
+        [Test]
+        public void numbers_skip_3()
         {
-            throw new System.NotImplementedException();
+            var numbers = new[] { 10, 20, 30, 40 };
+            var actual = JoeySkip(numbers, 3);
+            var expected = new[] { 40 };
+
+            expected.ToExpectedObject().ShouldMatch(actual);
         }
 
-        private static IEnumerable<Employee> GetEmployees()
+        private IEnumerable<TSource> JoeySkip<TSource>(IEnumerable<TSource> employees, int count)
         {
-            return new List<Employee>
+            var employeEnumerator = employees.GetEnumerator();
+            var index = 0;
+            while (employeEnumerator.MoveNext())
             {
-                new Employee {FirstName = "Joey", LastName = "Chen"},
-                new Employee {FirstName = "Tom", LastName = "Li"},
-                new Employee {FirstName = "David", LastName = "Chen"},
-                new Employee {FirstName = "Mike", LastName = "Chang"},
-                new Employee {FirstName = "Joseph", LastName = "Yao"},
-            };
+                var employee = employeEnumerator.Current;
+                if (index >= count)
+                {
+                    yield return employee;
+                }
+
+                index++;
+            }
         }
     }
 }
