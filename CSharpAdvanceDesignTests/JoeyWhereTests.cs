@@ -40,6 +40,31 @@ namespace CSharpAdvanceDesignTests
         }
 
         [Test]
+        public void where_closure_problems()
+        {
+            var products = new List<Product>
+            {
+                new Product {Id = 1, Cost = 11, Price = 110, Supplier = "Odd-e"},
+                new Product {Id = 2, Cost = 21, Price = 210, Supplier = "Yahoo"},
+                new Product {Id = 3, Cost = 31, Price = 310, Supplier = "Odd-e"},
+                new Product {Id = 4, Cost = 41, Price = 410, Supplier = "Odd-e"},
+                new Product {Id = 5, Cost = 51, Price = 510, Supplier = "Momo"},
+                new Product {Id = 6, Cost = 61, Price = 610, Supplier = "Momo"},
+                new Product {Id = 7, Cost = 71, Price = 710, Supplier = "Yahoo"},
+                new Product {Id = 8, Cost = 18, Price = 780, Supplier = "Yahoo"}
+            };
+
+            var expensiveCost = 60;
+            var richItems = products.Where(p => p.Cost > expensiveCost);
+
+            //id = 6,7
+
+            expensiveCost = 20;
+
+            Assert.AreEqual(6, richItems.Count());
+        }
+
+        [Test]
         public void group_sum_group_count_is_5_sum_id()
         {
             var products = new List<Product>
@@ -54,10 +79,9 @@ namespace CSharpAdvanceDesignTests
                 new Product {Id = 8, Cost = 18, Price = 780, Supplier = "Yahoo"}
             };
 
-
             var expected = new[]
             {
-                15,21
+                15, 21
             };
 
             var actual = JoeyGroupSum(products, 5, p => p.Id);
@@ -65,7 +89,8 @@ namespace CSharpAdvanceDesignTests
             expected.ToExpectedObject().ShouldMatch(actual);
         }
 
-        private IEnumerable<int> JoeyGroupSum<TSource>(IEnumerable<TSource> products, int groupSize, Func<TSource, int> selector)
+        private IEnumerable<int> JoeyGroupSum<TSource>(IEnumerable<TSource> products, int groupSize,
+            Func<TSource, int> selector)
         {
             var pageSize = groupSize;
             var pageIndex = 0;
