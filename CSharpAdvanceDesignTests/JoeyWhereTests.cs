@@ -72,10 +72,36 @@ namespace CSharpAdvanceDesignTests
             expected.ToExpectedObject().ShouldMatch(actual);
         }
 
-        private List<Product> JoeyWhere(List<Product> products, Func<Product, bool> predicate)
+        [Test]
+        public void find_short_names()
         {
-            var result = new List<Product>();
-            foreach (var product in products)
+            var names = new List<string> { "Joey", "Cash", "William", "Sam", "Brian", "Jessica" };
+            var actual = JoeyWhere(names, n => n.Length < 5);
+            var expected = new[]
+            {
+                "Joey", "Cash", "Sam"
+            };
+            expected.ToExpectedObject().ShouldMatch(actual);
+        }
+
+        //private List<string> JoeyWhereDuplicate(List<string> names, Func<string, bool> predicate)
+        //{
+        //    var result = new List<string>();
+        //    foreach (var product in names)
+        //    {
+        //        if (predicate(product))
+        //        {
+        //            result.Add(product);
+        //        }
+        //    }
+
+        //    return result;
+        //}
+
+        private List<TSource> JoeyWhere<TSource>(List<TSource> source, Func<TSource, bool> predicate)
+        {
+            var result = new List<TSource>();
+            foreach (var product in source)
             {
                 if (predicate(product))
                 {
