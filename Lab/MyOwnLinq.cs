@@ -126,5 +126,14 @@ namespace Lab
 
             return false;
         }
+
+        public static TSource JoeyFirstOrDefault<TSource>(this IEnumerable<TSource> employees)
+        {
+            var employeEnumerator = employees.GetEnumerator();
+            return employeEnumerator.MoveNext()
+                ? employeEnumerator.Current
+                : default(TSource);
+            //: null;
+        }
     }
 }
