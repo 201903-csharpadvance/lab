@@ -1,101 +1,12 @@
 ﻿using ExpectedObjects;
+using Lab;
 using Lab.Entities;
 using NUnit.Framework;
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace CSharpAdvanceDesignTests
 {
-    public class MyOrderedEnumerable : IOrderedEnumerable<Employee>
-    {
-        private readonly IEnumerable<Employee> _source;
-        private readonly IComparer<Employee> _untilNowComboComparer;
-
-        public MyOrderedEnumerable(IEnumerable<Employee> source, IComparer<Employee> untilNowComboComparer)
-        {
-            _source = source;
-            _untilNowComboComparer = untilNowComboComparer;
-        }
-
-        public IOrderedEnumerable<Employee> CreateOrderedEnumerable<TKey>(Func<Employee, TKey> keySelector,
-            IComparer<TKey> lastComparer, bool @descending)
-        {
-            var comparer = new CombineKeyComparer<TKey>(keySelector, lastComparer);
-            return new MyOrderedEnumerable(_source, new ComboComparer(_untilNowComboComparer, comparer));
-        }
-
-        public IEnumerator<Employee> GetEnumerator()
-        {
-            //bubble sort
-            var elements = _source.ToList();
-            while (elements.Any())
-            {
-                var minElement = elements[0];
-                var index = 0;
-                for (int i = 1; i < elements.Count; i++)
-                {
-                    var element = elements[i];
-
-                    if (_untilNowComboComparer.Compare(element, minElement) < 0)
-                    {
-                        minElement = element;
-                        index = i;
-                    }
-                }
-
-                elements.RemoveAt(index);
-                yield return minElement;
-            }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-    }
-
-    public class CombineKeyComparer<TKey> : IComparer<Employee>
-    {
-        public CombineKeyComparer(Func<Employee, TKey> keySelector, IComparer<TKey> keyComparer)
-        {
-            KeySelector = keySelector;
-            KeyComparer = keyComparer;
-        }
-
-        private Func<Employee, TKey> KeySelector { get; set; }
-        private IComparer<TKey> KeyComparer { get; set; }
-
-        public int Compare(Employee element, Employee minElement)
-        {
-            return KeyComparer.Compare(KeySelector(element), KeySelector(minElement));
-        }
-    }
-
-    public class ComboComparer : IComparer<Employee>
-    {
-        public ComboComparer(IComparer<Employee> firstComparer, IComparer<Employee> secondComparer)
-        {
-            FirstComparer = firstComparer;
-            SecondComparer = secondComparer;
-        }
-
-        public IComparer<Employee> FirstComparer { get; private set; }
-        public IComparer<Employee> SecondComparer { get; private set; }
-
-        public int Compare(Employee x, Employee y)
-        {
-            var firstCompareResult = FirstComparer.Compare(x, y);
-            if (firstCompareResult == 0)
-            {
-                return SecondComparer.Compare(x, y);
-            }
-
-            return firstCompareResult;
-        }
-    }
-
     [TestFixture]
     public class JoeyOrderByTests
     {
@@ -110,7 +21,7 @@ namespace CSharpAdvanceDesignTests
                 new Employee {FirstName = "Joey", LastName = "Chen"},
             };
 
-            var actual = JoeyOrderByKeepComparer(employees, element => element.LastName, Comparer<string>.Default);
+            var actual = employees.JoeyOrderByKeepComparer(element => element.LastName, Comparer<string>.Default);
 
             var expected = new[]
             {
@@ -165,11 +76,9 @@ namespace CSharpAdvanceDesignTests
                 new Employee {FirstName = "Joey", LastName = "Wang", Age = 20},
             };
 
-            var orderByLastName = JoeyOrderByKeepComparer(employees, e => e.LastName, Comparer<string>.Default);
-
-            var orderByFirstName = JoeyThenBy(orderByLastName, e => e.FirstName, Comparer<string>.Default);
-
-            var actual = JoeyThenBy(orderByFirstName, e => e.Age, Comparer<int>.Default);
+            var actual = employees.JoeyOrderByKeepComparer(e => e.LastName, Comparer<string>.Default)
+                .JoeyThenBy(e => e.FirstName, Comparer<string>.Default)
+                .JoeyThenBy(e => e.Age, Comparer<int>.Default);
             //var firstComparer = new CombineKeyComparer<string>(element => element.LastName, Comparer<string>.Default);
             //var secondComparer = new CombineKeyComparer<string>(element => element.FirstName, Comparer<string>.Default);
 
@@ -191,20 +100,6 @@ namespace CSharpAdvanceDesignTests
             };
 
             expected.ToExpectedObject().ShouldMatch(actual);
-        }
-
-        private IOrderedEnumerable<Employee> JoeyThenBy<TKey>(IOrderedEnumerable<Employee> source,
-            Func<Employee, TKey> keySelector, IComparer<TKey> comparer)
-        {
-            return source.CreateOrderedEnumerable(keySelector, comparer, false);
-        }
-
-        private IOrderedEnumerable<Employee> JoeyOrderByKeepComparer(IEnumerable<Employee> employees,
-            Func<Employee, string> keySelector, Comparer<string> comparer)
-        {
-            var myOrderedEnumerable =
-                new MyOrderedEnumerable(employees, new CombineKeyComparer<string>(keySelector, comparer));
-            return myOrderedEnumerable;
         }
 
         private IEnumerable<Employee> JoeyOrderBy(
