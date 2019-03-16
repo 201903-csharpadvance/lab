@@ -135,5 +135,18 @@ namespace Lab
                 : default(TSource);
             //: null;
         }
+
+        public static TSource JoeyLastOrDefault<TSource>(this IEnumerable<TSource> employees)
+        {
+            var enumerator = employees.GetEnumerator();
+            TSource last = default(TSource);
+            while (enumerator.MoveNext())
+            {
+                var employee = enumerator.Current;
+                last = employee;
+            }
+
+            return last;
+        }
     }
 }
