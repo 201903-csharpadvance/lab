@@ -2,6 +2,7 @@
 using Lab.Entities;
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CSharpAdvanceDesignTests
 {
@@ -13,18 +14,18 @@ namespace CSharpAdvanceDesignTests
         {
             var employees = new List<Employee>
             {
-                new Employee(){FirstName = "Joey",LastName = "Chen"},
-                new Employee(){FirstName = "Tom",LastName = "Li"},
-                new Employee(){FirstName = "David",LastName = "Wang"},
-            };
+                new Employee() {FirstName = "Joey", LastName = "Chen"},
+                new Employee() {FirstName = "Tom", LastName = "Li"},
+                new Employee() {FirstName = "David", LastName = "Wang"},
+            }; 
 
             var actual = JoeyReverse(employees);
 
             var expected = new List<Employee>
             {
-                new Employee(){FirstName = "David",LastName = "Wang"},
-                new Employee(){FirstName = "Tom",LastName = "Li"},
-                new Employee(){FirstName = "Joey",LastName = "Chen"},
+                new Employee() {FirstName = "David", LastName = "Wang"},
+                new Employee() {FirstName = "Tom", LastName = "Li"},
+                new Employee() {FirstName = "Joey", LastName = "Chen"},
             };
 
             expected.ToExpectedObject().ShouldMatch(actual);
@@ -32,7 +33,14 @@ namespace CSharpAdvanceDesignTests
 
         private IEnumerable<Employee> JoeyReverse(IEnumerable<Employee> employees)
         {
-            throw new System.NotImplementedException();
+            return new Stack<Employee>(employees);
+            //var stack = new Stack<Employee>(employees);
+            //var enumerator = stack.GetEnumerator();
+            //while (stack.Any())
+            ////while (enumerator.MoveNext())
+            //{
+            //    yield return stack.Pop();
+            //}
         }
     }
 }
