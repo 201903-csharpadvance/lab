@@ -2,7 +2,6 @@
 using Lab.Entities;
 using NUnit.Framework;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace CSharpAdvanceDesignTests
 {
@@ -17,7 +16,7 @@ namespace CSharpAdvanceDesignTests
                 new Employee() {FirstName = "Joey", LastName = "Chen"},
                 new Employee() {FirstName = "Tom", LastName = "Li"},
                 new Employee() {FirstName = "David", LastName = "Wang"},
-            }; 
+            };
 
             var actual = JoeyReverse(employees);
 
@@ -34,13 +33,6 @@ namespace CSharpAdvanceDesignTests
         private IEnumerable<Employee> JoeyReverse(IEnumerable<Employee> employees)
         {
             return new Stack<Employee>(employees);
-            //var stack = new Stack<Employee>(employees);
-            //var enumerator = stack.GetEnumerator();
-            //while (stack.Any())
-            ////while (enumerator.MoveNext())
-            //{
-            //    yield return stack.Pop();
-            //}
         }
     }
 }
