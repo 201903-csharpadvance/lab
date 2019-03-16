@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using Lab.Entities;
+using NUnit.Framework;
 using System.Collections.Generic;
 
 namespace CSharpAdvanceDesignTests
@@ -9,15 +10,41 @@ namespace CSharpAdvanceDesignTests
         [Test]
         public void compare_two_numbers_equal()
         {
-            var first = new List<int> {3, 2, 1};
-            var second = new List<int> {3, 2, 1};
+            var first = new List<int> { 3, 2, 1 };
+            var second = new List<int> { 3, 2, 1 };
 
             var actual = JoeySequenceEqual(first, second);
 
             Assert.IsTrue(actual);
         }
 
-        private bool JoeySequenceEqual(IEnumerable<int> first, IEnumerable<int> second)
+        [Test]
+        public void equality_compare_with_two_employees()
+        {
+            var first = new List<Employee>
+            {
+                new Employee() {FirstName = "Joey", LastName = "Chen"},
+                new Employee() {FirstName = "Tom", LastName = "Li"},
+                new Employee() {FirstName = "David", LastName = "Wang"},
+            };
+
+            var second = new List<Employee>
+            {
+                new Employee() {FirstName = "Joey", LastName = "Chen"},
+                new Employee() {FirstName = "Tom", LastName = "Li"},
+                new Employee() {FirstName = "David", LastName = "Wang"},
+            };
+
+            var actual = JoeySequenceEqual(first, second, new JoeyEqualityComparer());
+            Assert.IsTrue(actual);
+        }
+
+        private bool JoeySequenceEqual<TSource>(IEnumerable<TSource> first, IEnumerable<TSource> second)
+        {
+            return JoeySequenceEqual(first, second, EqualityComparer<TSource>.Default);
+        }
+
+        private bool JoeySequenceEqual<TSource>(IEnumerable<TSource> first, IEnumerable<TSource> second, IEqualityComparer<TSource> equalityComparer)
         {
             var firstEnumerator = first.GetEnumerator();
             var secondEnumerator = second.GetEnumerator();
@@ -32,14 +59,14 @@ namespace CSharpAdvanceDesignTests
                     return false;
                 }
 
-                if (IsValueDifferent(firstEnumerator, secondEnumerator))
-                {
-                    return false;
-                }
-
                 if (IsEnd(firstFlag))
                 {
                     return true;
+                }
+
+                if (!equalityComparer.Equals(firstEnumerator.Current, secondEnumerator.Current))
+                {
+                    return false;
                 }
             }
         }
@@ -49,14 +76,22 @@ namespace CSharpAdvanceDesignTests
             return !firstFlag;
         }
 
-        private static bool IsValueDifferent(IEnumerator<int> firstEnumerator, IEnumerator<int> secondEnumerator)
-        {
-            return firstEnumerator.Current != secondEnumerator.Current;
-        }
-
         private static bool IsLengthDifferent(bool firstFlag, bool secondFlag)
         {
             return firstFlag != secondFlag;
+        }
+    }
+
+    internal class JoeyEqualityComparer : IEqualityComparer<Employee>
+    {
+        public bool Equals(Employee x, Employee y)
+        {
+            return x.LastName == y.LastName && x.FirstName == y.FirstName;
+        }
+
+        public int GetHashCode(Employee obj)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }
