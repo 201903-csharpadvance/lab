@@ -1,4 +1,5 @@
-﻿using ExpectedObjects;
+﻿using System;
+using ExpectedObjects;
 using Lab;
 using Lab.Entities;
 using NUnit.Framework;
@@ -76,19 +77,15 @@ namespace CSharpAdvanceDesignTests
                 new Employee {FirstName = "Joey", LastName = "Wang", Age = 20},
             };
 
-            var actual = employees.JoeyOrderByKeepComparer(e => e.LastName, Comparer<string>.Default)
+            var actual = employees
+                .JoeyOrderByKeepComparer(e => e.LastName, Comparer<string>.Default)
                 .JoeyThenBy(e => e.FirstName, Comparer<string>.Default)
                 .JoeyThenBy(e => e.Age, Comparer<int>.Default);
-            //var firstComparer = new CombineKeyComparer<string>(element => element.LastName, Comparer<string>.Default);
-            //var secondComparer = new CombineKeyComparer<string>(element => element.FirstName, Comparer<string>.Default);
 
-            //var firstCombo = new ComboComparer(firstComparer, secondComparer);
-
-            //var thirdComparer = new CombineKeyComparer<int>(element => element.Age, Comparer<int>.Default);
-
-            //var finalCombo = new ComboComparer(firstCombo, thirdComparer);
-
-            //var actual = JoeyOrderBy(employees, finalCombo);
+            foreach (var item in actual)
+            {
+                Console.WriteLine(item.Age);
+            }
 
             var expected = new[]
             {
