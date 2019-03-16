@@ -1,13 +1,11 @@
 ﻿using Lab.Entities;
 using NUnit.Framework;
 using NUnit.Framework.Internal;
-using System;
 using System.Collections.Generic;
 
 namespace CSharpAdvanceDesignTests
 {
     [TestFixture()]
-    [Ignore("not yet")]
     public class JoeyFirstOrDefaultTests
     {
         [Test]
@@ -20,9 +18,21 @@ namespace CSharpAdvanceDesignTests
             Assert.IsNull(actual);
         }
 
-        private Employee JoeyFirstOrDefault(IEnumerable<Employee> employees)
+        [Test]
+        public void numbers_is_empty()
         {
-            throw new NotImplementedException();
+            var numbers = new List<int>();
+            var actual = JoeyFirstOrDefault(numbers);
+            Assert.AreEqual(0, actual);
+        }
+
+        private TSource JoeyFirstOrDefault<TSource>(IEnumerable<TSource> employees)
+        {
+            var employeEnumerator = employees.GetEnumerator();
+            return employeEnumerator.MoveNext()
+                ? employeEnumerator.Current
+                : default(TSource);
+            //: null;
         }
     }
 }
