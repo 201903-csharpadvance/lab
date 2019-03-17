@@ -1,5 +1,4 @@
-﻿using System;
-using ExpectedObjects;
+﻿using ExpectedObjects;
 using Lab;
 using Lab.Entities;
 using NUnit.Framework;
@@ -81,11 +80,6 @@ namespace CSharpAdvanceDesignTests
                 .JoeyOrderByKeepComparer(e => e.LastName, Comparer<string>.Default)
                 .JoeyThenBy(e => e.FirstName, Comparer<string>.Default)
                 .JoeyThenBy(e => e.Age, Comparer<int>.Default);
-
-            foreach (var item in actual)
-            {
-                Console.WriteLine(item.Age);
-            }
 
             var expected = new[]
             {
