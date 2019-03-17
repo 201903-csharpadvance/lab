@@ -34,7 +34,8 @@ namespace CSharpAdvanceDesignTests
             var actual = JoeyJoin(
                 employees,
                 pets,
-                (employee, pet) => Tuple.Create(employee.FirstName, pet.Name));
+                e => e,
+                p => p.Owner, EqualityComparer<Employee>.Default, (employee, pet) => Tuple.Create(employee.FirstName, pet.Name));
 
             var expected = new[]
             {
@@ -69,8 +70,7 @@ namespace CSharpAdvanceDesignTests
                 new Pet() {Name = "QQ", Owner = joey},
             };
 
-            var actual = JoeyJoin(employees, pets,
-                (employee, pet) => $"{pet.Name}-{employee.LastName}");
+            var actual = JoeyJoin(employees, pets, employee1 => employee1, pet1 => pet1.Owner, EqualityComparer<Employee>.Default, (employee, pet) => $"{pet.Name}-{employee.LastName}");
 
             var expected = new[]
             {
@@ -83,26 +83,69 @@ namespace CSharpAdvanceDesignTests
             expected.ToExpectedObject().ShouldMatch(actual);
         }
 
-        private IEnumerable<TResult> JoeyJoin<TResult>(IEnumerable<Employee> employees, IEnumerable<Pet> pets, Func<Employee, Pet, TResult> resultSelector)
+        [Test]
+        public void join_pet_partial_name_and_owner_firstName()
         {
-            var employeEnumerator = employees.GetEnumerator();
-
-            var petEnumerator = pets.GetEnumerator();
-            while (employeEnumerator.MoveNext())
+            var employees = new[]
             {
-                var employee = employeEnumerator.Current;
+                new Employee {FirstName = "David", LastName = "Li"},
+                new Employee {FirstName = "Joey", LastName = "Chen"},
+                new Employee {FirstName = "Tom", LastName = "Wang"},
+            };
 
-                while (petEnumerator.MoveNext())
+            var pets = new Pet[]
+            {
+                new Pet() {Name = "Joey-Lala"},
+                new Pet() {Name = "David-Didi"},
+                new Pet() {Name = "Tom-Fufu"},
+                new Pet() {Name = "Joey-QQ"},
+            };
+
+            var actual = JoeyJoin(
+                employees,
+                pets,
+                e => e.FirstName,
+                p => p.Name.Split('-')[0],
+                EqualityComparer<string>.Default,
+                (e, p) => $"{e.FirstName[0]}-{p.Name.Split('-')[1]}");
+
+            var expected = new[]
+            {
+                "D-Didi",
+                "J-Lala",
+                "J-QQ",
+                "T-Fufu",
+            };
+
+            expected.ToExpectedObject().ShouldMatch(actual);
+        }
+
+        private IEnumerable<TResult> JoeyJoin<TOuter, TInner, TKey, TResult>(
+            IEnumerable<TOuter> outer,
+            IEnumerable<TInner> inner,
+            Func<TOuter, TKey> outerKeySelector,
+            Func<TInner, TKey> innerKeySelector,
+            IEqualityComparer<TKey> keyEqualityComparer,
+            Func<TOuter, TInner, TResult> resultSelector)
+        {
+            var outerEnumerator = outer.GetEnumerator();
+
+            var innerEnumerator = inner.GetEnumerator();
+            while (outerEnumerator.MoveNext())
+            {
+                var outerCurrent = outerEnumerator.Current;
+
+                while (innerEnumerator.MoveNext())
                 {
-                    var pet = petEnumerator.Current;
+                    var innerCurrent = innerEnumerator.Current;
 
-                    if (pet.Owner.Equals(employee))
+                    if (keyEqualityComparer.Equals(outerKeySelector(outerCurrent), innerKeySelector(innerCurrent)))
                     {
-                        yield return resultSelector(employee, pet);
+                        yield return resultSelector(outerCurrent, innerCurrent);
                     }
                 }
 
-                petEnumerator.Reset();
+                innerEnumerator.Reset();
             }
         }
     }
