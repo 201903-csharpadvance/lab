@@ -1,4 +1,5 @@
-﻿using ExpectedObjects;
+﻿using System;
+using ExpectedObjects;
 using NUnit.Framework;
 using System.Collections.Generic;
 
@@ -17,7 +18,10 @@ namespace CSharpAdvanceDesignTests
                 new City {Name = "新北市", Sections = new List<string> {"三重", "新莊"}},
             };
 
-            var actual = JoeySelectMany(cities);
+            var actual = JoeySelectMany(cities,
+                city => city.Sections,
+                (city, section) => GetZipCode(city,section));
+                //(city, section) => $"{city.Name}-{section}");
 
             var expected = new[]
             {
@@ -31,9 +35,25 @@ namespace CSharpAdvanceDesignTests
             expected.ToExpectedObject().ShouldMatch(actual);
         }
 
-        private IEnumerable<string> JoeySelectMany(IEnumerable<City> cities)
+        private string GetZipCode(City city, string section)
         {
-            throw new System.NotImplementedException();
+            var dictionary = new Dictionary<string, string>()
+            {
+                {"台北市大同","110" }
+            };
+
+            return dictionary[$"{city}{section}"];
+        }
+
+        private IEnumerable<string> JoeySelectMany(IEnumerable<City> cities, Func<City, IEnumerable<string>> collectionSelector, Func<City, string, string> resultSelector)
+        {
+            foreach (var city in cities)
+            {
+                foreach (var section in collectionSelector(city))
+                {
+                    yield return resultSelector(city, section);
+                }
+            }
         }
     }
 
