@@ -76,6 +76,7 @@
     <Compile Include="JoeySelectManyTests.cs" />
     <Compile Include="JoeySelectTests.cs" />
     <Compile Include="JoeySequenceEqualTests.cs" />
+    <Compile Include="JoeySkipLastTest.cs" />
     <Compile Include="JoeySkipTests.cs" />
     <Compile Include="JoeySkipWhileTests.cs" />
     <Compile Include="JoeyTakeTests.cs" />
