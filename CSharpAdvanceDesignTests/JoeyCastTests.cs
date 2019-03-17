@@ -27,9 +27,9 @@ namespace CSharpAdvanceDesignTests
             while (enumerator.MoveNext())
             {
                 var current = enumerator.Current;
-                if (current is T item)
+                if (current is T cast)
                 {
-                    yield return item;
+                    yield return cast;
                 }
                 else
                 {

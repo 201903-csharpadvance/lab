@@ -55,7 +55,7 @@
     <Compile Include="IValidator.cs" />
     <Compile Include="MyOrderedEnumerable.cs" />
     <Compile Include="MyOwnLinq.cs" />
-    <Compile Include="ProductValidator.cs" />
+    <Compile Include="ProfitValidator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
