@@ -1,9 +1,11 @@
-﻿using NUnit.Framework;
+﻿using ExpectedObjects;
+using Lab.Entities;
+using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 
 namespace CSharpAdvanceDesignTests
 {
-    [Ignore("not yet")]
     [TestFixture]
     public class JoeyAggregateTests
     {
@@ -17,16 +19,35 @@ namespace CSharpAdvanceDesignTests
                 30, 80, 20, 40, 25
             };
 
-            var actual = JoeyAggregate(drawlingList, balance);
+            var actual = JoeyAggregate(drawlingList, balance,
+                (current, seed) =>
+                {
+                    if (current <= seed)
+                    {
+                        seed -= current;
+                    }
 
-            var expected = 10.91m;
+                    return seed;
+                },
+                seed => new Employee { Saving = seed });
 
-            Assert.AreEqual(expected, actual);
+            var expected = new Employee() { Saving = 10.91m };
+
+            expected.ToExpectedObject().ShouldMatch(actual);
         }
 
-        private decimal JoeyAggregate(IEnumerable<int> drawlingList, decimal balance)
+        private TResult JoeyAggregate<TResult>(IEnumerable<int> drawlingList, decimal balance,
+            Func<int, decimal, decimal> func, Func<decimal, TResult> resultSelector)
         {
-            throw new System.NotImplementedException();
+            var seed = balance;
+
+            foreach (var current in drawlingList)
+            {
+                //seed = ((Func<decimal, int, decimal>) ((seed, current) => seed - (current <= seed ? current : 0)))(seed, current);
+                seed = func(current, seed);
+            }
+
+            return resultSelector(seed);
         }
     }
 }
